@@ -2,7 +2,8 @@
   "name": "raylibprojectcreator",
   "displayName": "RaylibProjectCreator",
   "description": "An easy way of creating a VSCode Raylib project fast without having to manually copy the corresponding folder and changing things inside the files.",
-  "version": "0.0.1",
+  "icon": "raylib.png",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -16,10 +17,6 @@
       {
         "command": "raylibprojectcreator.createProject",
         "title": "Create new Raylib project"
-      },
-      {
-        "command": "raylibprojectcreator.setRaylibPath",
-        "title": "Change Raylib Path"
       }
     ]
   },

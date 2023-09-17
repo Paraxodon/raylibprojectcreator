@@ -1,12 +1,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import {  mkdir, readdir } from 'fs';
+import { mkdir} from 'fs';
 import path = require('path');
 import * as vscode from 'vscode';
+import { exec } from 'child_process';
 
 let raylibPath: string | undefined = undefined;
 
-async function getFolderPath() {
+async function setFolderPath() {
 	const result = await vscode.window.showOpenDialog({
 	  canSelectFiles: false,
 	  canSelectFolders: true,
@@ -40,12 +41,13 @@ async function getFolderPath() {
 			// Recursively copy the subdirectory
 			copyDirectory(sourcePath, destinationPath);
 		  } else {
-			// Copy the file
+			//Copy files
 			vscode.workspace.fs.copy(vscode.Uri.file(sourcePath), vscode.Uri.file(destinationPath));
 		  }
 		});
 	  });
 	});
+	
   }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -67,11 +69,12 @@ export function activate(context: vscode.ExtensionContext) {
 		 	return;
 		}
 
-		let projectFolderPath = await getFolderPath();
+		let projectFolderPath = await setFolderPath();
 		if(projectFolderPath){
 			projectFolderPath = path.join(projectFolderPath, folderName);
-			vscode.window.showErrorMessage("Current raylib path is: " + path.join('c:', 'raylib') + ". This message is for debugging purposes");
 			copyDirectory(path.join(raylibPath, "raylib", "projects", "VSCode"), projectFolderPath);
+			setMakefileVariables(projectFolderPath, folderName);
+			//Modify needed files
 		}
 		else{
 			vscode.window.showErrorMessage('Error on path.');
@@ -79,20 +82,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
-	let setRaylibPath = vscode.commands.registerCommand('raylibprojectcreator.setRaylibPath', async () =>{
-		const newPath = await getFolderPath();
-
-		if (newPath) {
-			raylibPath = newPath;
-			context.workspaceState.update('raylibPath', raylibPath);
-		} 
-		else {
-			
-    	}
-	});
-
 	context.subscriptions.push(createProject);
-	context.subscriptions.push(setRaylibPath);
+}
+
+function setMakefileVariables(copiedDirectory: string, projectName: string) {
+    
+	const nameCommand = 'set PROJECT_NAME= ' + projectName;
+
+	exec(nameCommand, { cwd: copiedDirectory }, (error, stdout, stderr) => {
+		if(error){
+			vscode.window.showErrorMessage(`Error setting PROJECT_NAME: ${error.message}`);
+		}
+	});
 }
 
 // This method is called when your extension is deactivated
