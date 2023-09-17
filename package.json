@@ -3,6 +3,7 @@
   "displayName": "RaylibProjectCreator",
   "description": "An easy way of creating a VSCode Raylib project fast without having to manually copy the corresponding folder and changing things inside the files.",
   "icon": "raylib.png",
+  "repository": "https://github.com/Paraxodon/raylibprojectcreator",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.80.0"
